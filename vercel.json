@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "BLOB_READ_WRITE_TOKEN": "@blob_read_write_token"
+  },
+  "build": {
+    "env": {
+      "MONGODB_URI": "@mongodb_uri",
+      "BLOB_READ_WRITE_TOKEN": "@blob_read_write_token"
+    }
+  }
+}
