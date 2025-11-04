@@ -111,7 +111,7 @@ export default function BulkPlayerDialog({ open, onOpenChange, onSuccess, teamId
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Bulk Players</DialogTitle>
         </DialogHeader>
@@ -133,7 +133,7 @@ export default function BulkPlayerDialog({ open, onOpenChange, onSuccess, teamId
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor={`name-${row.id}`}>Name *</Label>
                     <Input
@@ -173,22 +173,22 @@ export default function BulkPlayerDialog({ open, onOpenChange, onSuccess, teamId
 
                   <div className="space-y-2">
                     <Label>Options</Label>
-                    <div className="flex items-center gap-4 pt-2">
-                      <div className="flex items-center gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                      <div className="flex items-center gap-2 p-2 border rounded">
                         <Switch
                           id={`captain-${row.id}`}
                           checked={row.isCaptain}
                           onCheckedChange={(checked) => updateRow(row.id, 'isCaptain', checked)}
                         />
-                        <Label htmlFor={`captain-${row.id}`} className="text-sm">Captain</Label>
+                        <Label htmlFor={`captain-${row.id}`} className="text-sm cursor-pointer">Captain</Label>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 p-2 border rounded">
                         <Switch
                           id={`wk-${row.id}`}
                           checked={row.isWicketKeeper}
                           onCheckedChange={(checked) => updateRow(row.id, 'isWicketKeeper', checked)}
                         />
-                        <Label htmlFor={`wk-${row.id}`} className="text-sm">WK</Label>
+                        <Label htmlFor={`wk-${row.id}`} className="text-sm cursor-pointer">WK</Label>
                       </div>
                     </div>
                   </div>

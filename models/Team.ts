@@ -4,8 +4,6 @@ export interface ITeam extends Document {
   _id: string;
   name: string;
   logoUrl?: string;
-  homeCity?: string;
-  foundedYear?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,15 +19,6 @@ const TeamSchema = new Schema<ITeam>(
     logoUrl: {
       type: String,
       default: null,
-    },
-    homeCity: {
-      type: String,
-      trim: true,
-    },
-    foundedYear: {
-      type: Number,
-      min: 1800,
-      max: new Date().getFullYear(),
     },
   },
   {

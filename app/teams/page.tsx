@@ -13,8 +13,6 @@ interface Team {
   _id: string;
   name: string;
   logoUrl?: string;
-  homeCity?: string;
-  foundedYear?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -91,23 +89,29 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Cricket Teams</h1>
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">Cricket Teams</h1>
         <div className="flex gap-2">
-          <Button onClick={handleExportAll} disabled={exporting || teams.length === 0}>
-            <Download className="mr-2 h-4 w-4" />
-            {exporting ? 'Exporting...' : 'Export All'}
+          <Button 
+            onClick={handleExportAll} 
+            disabled={exporting || teams.length === 0}
+            size="sm"
+            className="sm:h-10"
+          >
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{exporting ? 'Exporting...' : 'Export All'}</span>
           </Button>
-          <Button onClick={() => setShowTeamDialog(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Team
+          <Button onClick={() => setShowTeamDialog(true)} size="sm" className="sm:h-10">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Team</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>
 
       <div className="mb-6">
-        <div className="relative max-w-md">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             placeholder="Search teams..."
@@ -129,7 +133,7 @@ export default function TeamsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {teams.map((team) => (
             <Card
               key={team._id}
@@ -156,18 +160,6 @@ export default function TeamsPage() {
                 </div>
                 <CardTitle className="text-center">{team.name}</CardTitle>
               </CardHeader>
-              <CardContent>
-                {team.homeCity && (
-                  <p className="text-sm text-gray-600 text-center">
-                    {team.homeCity}
-                  </p>
-                )}
-                {team.foundedYear && (
-                  <p className="text-sm text-gray-500 text-center mt-1">
-                    Founded: {team.foundedYear}
-                  </p>
-                )}
-              </CardContent>
             </Card>
           ))}
         </div>

@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { name, logoUrl, homeCity, foundedYear } = body;
+    const { name, logoUrl } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -43,8 +43,6 @@ export async function POST(request: NextRequest) {
     const team = await Team.create({
       name,
       logoUrl,
-      homeCity,
-      foundedYear,
     });
 
     return NextResponse.json({ success: true, data: team }, { status: 201 });

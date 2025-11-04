@@ -16,8 +16,6 @@ interface TeamFormDialogProps {
     _id: string;
     name: string;
     logoUrl?: string;
-    homeCity?: string;
-    foundedYear?: number;
   };
 }
 
@@ -27,8 +25,6 @@ export default function TeamFormDialog({ open, onOpenChange, onSuccess, team }: 
   const [formData, setFormData] = useState({
     name: team?.name || '',
     logoUrl: team?.logoUrl || '',
-    homeCity: team?.homeCity || '',
-    foundedYear: team?.foundedYear || '',
   });
   const [previewUrl, setPreviewUrl] = useState(team?.logoUrl || '');
 
@@ -80,8 +76,6 @@ export default function TeamFormDialog({ open, onOpenChange, onSuccess, team }: 
         body: JSON.stringify({
           name: formData.name.trim(),
           logoUrl: formData.logoUrl,
-          homeCity: formData.homeCity.trim(),
-          foundedYear: formData.foundedYear ? Number(formData.foundedYear) : undefined,
         }),
       });
 
@@ -89,7 +83,7 @@ export default function TeamFormDialog({ open, onOpenChange, onSuccess, team }: 
       if (data.success) {
         onSuccess();
         // Reset form
-        setFormData({ name: '', logoUrl: '', homeCity: '', foundedYear: '' });
+        setFormData({ name: '', logoUrl: '' });
         setPreviewUrl('');
       } else {
         alert(data.error || 'Failed to save team');
@@ -104,12 +98,12 @@ export default function TeamFormDialog({ open, onOpenChange, onSuccess, team }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{team ? 'Edit Team' : 'Add New Team'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 px-1">
             <div className="space-y-2">
               <Label htmlFor="name">Team Name *</Label>
               <Input
@@ -118,29 +112,6 @@ export default function TeamFormDialog({ open, onOpenChange, onSuccess, team }: 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter team name"
                 required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="homeCity">Home City</Label>
-              <Input
-                id="homeCity"
-                value={formData.homeCity}
-                onChange={(e) => setFormData({ ...formData, homeCity: e.target.value })}
-                placeholder="Enter home city"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="foundedYear">Founded Year</Label>
-              <Input
-                id="foundedYear"
-                type="number"
-                min="1800"
-                max={new Date().getFullYear()}
-                value={formData.foundedYear}
-                onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
-                placeholder="Enter founded year"
               />
             </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,14 +10,26 @@ import { Switch } from '@/components/ui/switch';
 import { Upload } from 'lucide-react';
 import Image from 'next/image';
 
-interface PlayerFormDialogProps {
+interface Player {
+  _id: string;
+  name: string;
+  imageUrl?: string;
+  city?: string;
+  isCaptain: boolean;
+  isWicketKeeper: boolean;
+  playingRole: string;
+  teamId: string;
+  battingOrder?: number;
+}
+
+interface PlayerEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
-  teamId: string;
+  player: Player | null;
 }
 
-export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId }: PlayerFormDialogProps) {
+export default function PlayerEditDialog({ open, onOpenChange, onSuccess, player }: PlayerEditDialogProps) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,6 +42,21 @@ export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId
     battingOrder: '',
   });
   const [previewUrl, setPreviewUrl] = useState('');
+
+  useEffect(() => {
+    if (player) {
+      setFormData({
+        name: player.name || '',
+        imageUrl: player.imageUrl || '',
+        city: player.city || '',
+        isCaptain: player.isCaptain || false,
+        isWicketKeeper: player.isWicketKeeper || false,
+        playingRole: player.playingRole || 'Bat',
+        battingOrder: player.battingOrder?.toString() || '',
+      });
+      setPreviewUrl(player.imageUrl || '');
+    }
+  }, [player]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -66,10 +93,12 @@ export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId
       return;
     }
 
+    if (!player) return;
+
     try {
       setLoading(true);
-      const res = await fetch('/api/players', {
-        method: 'POST',
+      const res = await fetch(`/api/players/${player._id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -80,7 +109,7 @@ export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId
           isCaptain: formData.isCaptain,
           isWicketKeeper: formData.isWicketKeeper,
           playingRole: formData.playingRole,
-          teamId,
+          teamId: player.teamId,
           battingOrder: formData.battingOrder ? Number(formData.battingOrder) : undefined,
         }),
       });
@@ -88,33 +117,25 @@ export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId
       const data = await res.json();
       if (data.success) {
         onSuccess();
-        // Reset form
-        setFormData({
-          name: '',
-          imageUrl: '',
-          city: '',
-          isCaptain: false,
-          isWicketKeeper: false,
-          playingRole: 'Bat',
-          battingOrder: '',
-        });
-        setPreviewUrl('');
+        onOpenChange(false);
       } else {
-        alert(data.error || 'Failed to add player');
+        alert(data.error || 'Failed to update player');
       }
     } catch (error) {
       console.error('Submit error:', error);
-      alert('Failed to add player');
+      alert('Failed to update player');
     } finally {
       setLoading(false);
     }
   };
 
+  if (!player) return null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Player</DialogTitle>
+          <DialogTitle>Edit Player</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
@@ -215,7 +236,7 @@ export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId
                     className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                   >
                     <Upload className="mr-2 h-4 w-4" />
-                    {uploading ? 'Uploading...' : 'Upload Image'}
+                    {uploading ? 'Uploading...' : 'Change Image'}
                   </Label>
                 </div>
               </div>
@@ -227,7 +248,7 @@ export default function PlayerFormDialog({ open, onOpenChange, onSuccess, teamId
               Cancel
             </Button>
             <Button type="submit" disabled={loading || uploading}>
-              {loading ? 'Adding...' : 'Add Player'}
+              {loading ? 'Updating...' : 'Update Player'}
             </Button>
           </DialogFooter>
         </form>

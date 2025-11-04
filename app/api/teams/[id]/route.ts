@@ -40,11 +40,11 @@ export async function PUT(
     const { id } = await params;
 
     const body = await request.json();
-    const { name, logoUrl, homeCity, foundedYear } = body;
+    const { name, logoUrl } = body;
 
     const team = await Team.findByIdAndUpdate(
       id,
-      { name, logoUrl, homeCity, foundedYear },
+      { name, logoUrl },
       { new: true, runValidators: true }
     );
 

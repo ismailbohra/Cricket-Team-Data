@@ -9,6 +9,7 @@ import { ArrowLeft, Edit, Trash, Download, Users, Plus } from 'lucide-react';
 import Image from 'next/image';
 import TeamFormDialog from '@/components/TeamFormDialog';
 import PlayerFormDialog from '@/components/PlayerFormDialog';
+import PlayerEditDialog from '@/components/PlayerEditDialog';
 import BulkPlayerDialog from '@/components/BulkPlayerDialog';
 import BattingOrderManager from '@/components/BattingOrderManager';
 
@@ -16,8 +17,6 @@ interface Team {
   _id: string;
   name: string;
   logoUrl?: string;
-  homeCity?: string;
-  foundedYear?: number;
 }
 
 interface Player {
@@ -40,6 +39,8 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true);
   const [showEditTeam, setShowEditTeam] = useState(false);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
+  const [showEditPlayer, setShowEditPlayer] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showBulkAdd, setShowBulkAdd] = useState(false);
   const [showBattingOrder, setShowBattingOrder] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -151,11 +152,18 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
     }
   };
 
+  const handleEditPlayer = (player: Player) => {
+    setSelectedPlayer(player);
+    setShowEditPlayer(true);
+  };
+
   const handleSuccess = () => {
     setShowEditTeam(false);
     setShowAddPlayer(false);
+    setShowEditPlayer(false);
     setShowBulkAdd(false);
     setShowBattingOrder(false);
+    setSelectedPlayer(null);
     fetchTeam();
     fetchPlayers();
   };
@@ -171,81 +179,82 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
       <Button
         variant="ghost"
-        className="mb-6"
+        className="mb-4 sm:mb-6"
         onClick={() => router.push('/teams')}
+        size="sm"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Teams
       </Button>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+      <Card className="mb-4 sm:mb-6">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               {team.logoUrl ? (
                 <Image
                   src={team.logoUrl}
                   alt={team.name}
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
+                  width={60}
+                  height={60}
+                  className="rounded-full object-cover sm:w-20 sm:h-20"
                 />
               ) : (
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-3xl font-bold text-gray-400">
+                <div className="w-15 h-15 sm:w-20 sm:h-20 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-2xl sm:text-3xl font-bold text-gray-400">
                     {team.name.charAt(0)}
                   </span>
                 </div>
               )}
               <div>
-                <CardTitle className="text-3xl mb-2">{team.name}</CardTitle>
-                <div className="flex gap-4 text-sm text-gray-600">
-                  {team.homeCity && <span>{team.homeCity}</span>}
-                  {team.foundedYear && <span>Founded: {team.foundedYear}</span>}
-                </div>
+                <CardTitle className="text-xl sm:text-3xl">{team.name}</CardTitle>
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowEditTeam(true)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Team
+              <Button variant="outline" onClick={() => setShowEditTeam(true)} size="sm" className="sm:h-10">
+                <Edit className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Edit Team</span>
               </Button>
-              <Button variant="destructive" onClick={handleDeleteTeam}>
-                <Trash className="mr-2 h-4 w-4" />
-                Delete Team
+              <Button variant="destructive" onClick={handleDeleteTeam} size="sm" className="sm:h-10">
+                <Trash className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Delete Team</span>
               </Button>
             </div>
           </div>
         </CardHeader>
       </Card>
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5" />
-          <h2 className="text-2xl font-bold">Players ({players.length})</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">Players ({players.length})</h2>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             onClick={handleExportTeam}
             disabled={exporting || players.length === 0}
+            size="sm"
+            className="sm:h-10"
           >
-            <Download className="mr-2 h-4 w-4" />
-            {exporting ? 'Exporting...' : 'Export to Excel'}
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{exporting ? 'Exporting...' : 'Export to Excel'}</span>
           </Button>
-          <Button variant="outline" onClick={() => setShowBattingOrder(true)} disabled={players.length === 0}>
-            Batting Order
+          <Button variant="outline" onClick={() => setShowBattingOrder(true)} disabled={players.length === 0} size="sm" className="sm:h-10">
+            <span className="text-xs sm:text-sm">Batting Order</span>
           </Button>
-          <Button variant="outline" onClick={() => setShowBulkAdd(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Bulk Players
+          <Button variant="outline" onClick={() => setShowBulkAdd(true)} size="sm" className="sm:h-10">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Bulk Players</span>
+            <span className="sm:hidden text-xs">Bulk</span>
           </Button>
-          <Button onClick={() => setShowAddPlayer(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Player
+          <Button onClick={() => setShowAddPlayer(true)} size="sm" className="sm:h-10">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Player</span>
+            <span className="sm:hidden text-xs">Add</span>
           </Button>
         </div>
       </div>
@@ -254,7 +263,7 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-gray-500 mb-4">No players in this team yet</p>
-            <div className="flex gap-2 justify-center">
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <Button onClick={() => setShowBulkAdd(true)}>
                 Add Bulk Players
               </Button>
@@ -265,7 +274,7 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {players.map((player) => (
             <Card key={player._id}>
               <CardContent className="pt-6">
@@ -297,14 +306,24 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
                       <Badge variant="outline">Order: {player.battingOrder}</Badge>
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-600"
-                    onClick={() => handleDeletePlayer(player._id)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-600"
+                      onClick={() => handleEditPlayer(player)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600"
+                      onClick={() => handleDeletePlayer(player._id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -324,6 +343,13 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
         onOpenChange={setShowAddPlayer}
         onSuccess={handleSuccess}
         teamId={teamId}
+      />
+
+      <PlayerEditDialog
+        open={showEditPlayer}
+        onOpenChange={setShowEditPlayer}
+        onSuccess={handleSuccess}
+        player={selectedPlayer}
       />
 
       <BulkPlayerDialog

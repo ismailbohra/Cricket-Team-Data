@@ -183,7 +183,7 @@ export default function BattingOrderManager({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Set Batting Order</DialogTitle>
           <p className="text-sm text-gray-600 mt-2">
