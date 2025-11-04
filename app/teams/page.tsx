@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Download } from 'lucide-react';
+import { Plus, Search, Download, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import TeamFormDialog from '@/components/TeamFormDialog';
+import { useAuth, logout, getUsername } from '@/lib/auth';
 
 interface Team {
   _id: string;
@@ -18,14 +19,17 @@ interface Team {
 }
 
 export default function TeamsPage() {
+  useAuth(); // Protect this page
   const router = useRouter();
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showTeamDialog, setShowTeamDialog] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
+    setUsername(getUsername());
     fetchTeams();
   }, [search]);
 
@@ -90,8 +94,31 @@ export default function TeamsPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-2">
+          {username && (
+            <span className="text-sm text-gray-600">Welcome, <span className="font-semibold">{username}</span></span>
+          )}
+        </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={logout}
+          className="text-red-600 hover:text-red-700"
+        >
+          <LogOut className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Logout</span>
+        </Button>
+      </div>
+
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-2">
+          Burhani Premiere League Season 16
+        </h1>
+      </div>
+
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Cricket Teams</h1>
+        <h2 className="text-xl sm:text-2xl font-bold">Teams</h2>
         <div className="flex gap-2">
           <Button 
             onClick={handleExportAll} 

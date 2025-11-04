@@ -12,6 +12,7 @@ import PlayerFormDialog from '@/components/PlayerFormDialog';
 import PlayerEditDialog from '@/components/PlayerEditDialog';
 import BulkPlayerDialog from '@/components/BulkPlayerDialog';
 import BattingOrderManager from '@/components/BattingOrderManager';
+import { useAuth } from '@/lib/auth';
 
 interface Team {
   _id: string;
@@ -32,6 +33,7 @@ interface Player {
 }
 
 export default function TeamDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  useAuth(); // Protect this page
   const router = useRouter();
   const [teamId, setTeamId] = useState<string>('');
   const [team, setTeam] = useState<Team | null>(null);
@@ -180,6 +182,12 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-2">
+          Burhani Premiere League Season 16
+        </h1>
+      </div>
+
       <Button
         variant="ghost"
         className="mb-4 sm:mb-6"
