@@ -5,12 +5,13 @@ import Player from '@/models/Player';
 // GET /api/players/[id] - Get player details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const player = await Player.findById(params.id).populate('teamId', 'name');
+    const player = await Player.findById(id).populate('teamId', 'name');
 
     if (!player) {
       return NextResponse.json(
@@ -31,10 +32,11 @@ export async function GET(
 // PUT /api/players/[id] - Update player
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
     const body = await request.json();
     const { name, imageUrl, city, isCaptain, isWicketKeeper, playingRole, teamId, battingOrder } = body;
@@ -42,13 +44,13 @@ export async function PUT(
     // If setting this player as captain, remove captain status from other players in the team
     if (isCaptain && teamId) {
       await Player.updateMany(
-        { teamId, isCaptain: true, _id: { $ne: params.id } },
+        { teamId, isCaptain: true, _id: { $ne: id } },
         { isCaptain: false }
       );
     }
 
     const player = await Player.findByIdAndUpdate(
-      params.id,
+      id,
       { name, imageUrl, city, isCaptain, isWicketKeeper, playingRole, teamId, battingOrder },
       { new: true, runValidators: true }
     ).populate('teamId', 'name');
@@ -72,12 +74,13 @@ export async function PUT(
 // DELETE /api/players/[id] - Delete player
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const { id } = await params;
 
-    const player = await Player.findByIdAndDelete(params.id);
+    const player = await Player.findByIdAndDelete(id);
 
     if (!player) {
       return NextResponse.json(
